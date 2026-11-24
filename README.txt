@@ -1,54 +1,62 @@
-AYODOWNLOADER V3 — ONLINE BACKEND STARTER
-========================================
+AYODOWNLOADER V4 — ONLINE MEDIA LINK TOOL
+=========================================
 
-WHAT IS INCLUDED
-- Your existing navy/green V3 interface (layout kept as-is).
-- FastAPI backend with /api/health and /api/analyze endpoints.
-- The frontend calls the online API when deployed.
-- Render deployment blueprint (render.yaml).
+DEPLOYMENT STATUS
+This package is intended to replace the current repository contents. It uses
+FastAPI on Render and serves the website and API from the same service.
+
+FEATURES
+- Online URL validation and source classification.
+- Recognises direct video files: MP4, WebM, MOV, M4V.
+- Recognises direct audio files: MP3, M4A, AAC, WAV, OGG, FLAC.
+- In-page preview for direct media URLs when the source permits it.
+- Opens the original direct media URL; does not proxy or re-host remote files.
+- Recognises YouTube, TikTok, Instagram, Facebook, X and Vimeo links.
 - PWA manifest and Android Share Target support over HTTPS.
+- Health endpoint: /api/health
 
-IMPORTANT — CURRENT CAPABILITIES
-This is the first online backend foundation, not a universal media extractor.
-It recognises public direct media-file URLs and supported platform links.
-For direct MP4/MP3-style links, it offers the original source URL; whether that
-opens or downloads depends on the source host and browser.
-Platform links are recognised, but video/audio extraction and quality listings
-are NOT connected yet. Those require an approved API/source integration and
-permission to save the content. This app does not bypass DRM, private/login-only
+IMPORTANT CAPABILITY LIMITS
+Platform recognition is not media extraction. This release does not retrieve
+video/audio streams from social platforms and does not show platform quality
+variants. Such features require a permitted platform API or a source integration
+authorised by the content owner. This app does not bypass DRM, logins, private
 content, access controls, or platform download restrictions.
 
-DEPLOY ONLINE (NO PYTHON INSTALL NEEDED ON YOUR COMPUTER)
-1. Extract this ZIP.
-2. Sign in to GitHub and create a NEW repository named ayodownloader.
-3. Upload the CONTENTS of the AyoDownloader_V3 folder into the repository root.
-   Make sure main.py, requirements.txt and render.yaml are at the top level.
-4. Sign in to Render and choose New > Blueprint.
-5. Connect the GitHub repository you just created.
-6. Render reads render.yaml. Review the service, then apply/create it.
-7. Wait for the first deploy to finish. Render will show your public https:// URL.
-8. Open that URL. Add /api/health to the end; it should return JSON with
-   "ok": true. Then test the main website.
+For direct media links, the available choice is the original source file only.
+Whether it can be saved depends on the source host, browser and your permission
+to save it. The service does not fetch or proxy the submitted URL.
 
-Render's free web services can sleep after 15 minutes without activity and may
-need around a minute to wake up. Check Render's current plan details before
-relying on it for continuous availability.
+UPDATE THE EXISTING RENDER DEPLOYMENT
+1. Extract this ZIP on your computer.
+2. Open your existing GitHub repository: ayodownloader.
+3. Choose Add file > Upload files.
+4. Open the extracted AyoDownloader_V4 folder and select all CONTENTS inside it.
+5. Drag the files/folders into GitHub's upload area. Replace existing files when
+   GitHub asks; keep the files at repository root.
+6. Commit the changes to the main branch.
+7. Render should detect the new commit and start a deployment automatically.
+8. Wait until the Render service shows Live.
+9. Test https://YOUR-SERVICE.onrender.com/api/health. It should return JSON
+   containing "ok": true and version "4.0.0".
+10. Open the main service URL and test a public direct media URL you are
+    authorised to access.
 
 ANDROID SHARE
-After the site is live over HTTPS:
-1. Open it in Chrome on Android.
-2. Use the browser menu and choose Install app / Add to Home screen.
-3. From another app, use Share and select AyoDownloader if the browser exposes
-   the installed PWA share target.
+When deployed over HTTPS, open the site in Chrome on Android and choose
+Install app / Add to Home screen. Then try sharing a link from another app and
+select AyoDownloader if the browser offers the installed PWA share target.
+PWA share support varies by browser/device; a native APK would need a separate
+Android wrapper and share-intent implementation.
 
-TROUBLESHOOTING
-- If the site does not load, open Render > your service > Logs and check deploy.
-- If /api/health works but the page does not, confirm index.html and assets are
-  in the repository root alongside main.py.
-- Every future change pushed to the connected GitHub branch can trigger a new
-  deployment.
+LOCAL DEVELOPMENT
+Python 3.10+ is required. In this folder:
+  python -m venv .venv
+  .venv\Scripts\activate
+  pip install -r requirements.txt
+  uvicorn main:app --reload
+Then open http://127.0.0.1:8000
 
 PRIVACY / SAFETY
-The current API classifies the submitted URL; it does not fetch or proxy remote
-files. Do not submit private links or links containing login credentials.
-Only save content you own or have permission to save.
+The API validates and classifies URL text; it does not request remote URLs.
+Do not paste private URLs or links containing credentials. Only save content
+you own or have permission to save.
