@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="AyoDownloader — detect supported media links and choose a format.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>AyoDownloader V3</title>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="AyoDownloader home">
+        <span class="brand-mark">A</span><span>Ayo<span class="green">Downloader</span><small>V3 · LINK DETECTOR</small></span>
+      </a>
+      <span class="status"><i></i> READY</span>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">YOUR MEDIA. YOUR CHOICE.</div>
+      <h1>Download made <span class="green">simple.</span></h1>
+      <p>Paste a supported media link, or share a link to AyoDownloader from another app.</p>
+    </section>
+
+    <section class="panel input-panel">
+      <label for="urlInput">VIDEO OR AUDIO LINK</label>
+      <div class="url-row">
+        <input id="urlInput" type="url" placeholder="Paste a link here…" autocomplete="url" inputmode="url">
+        <button id="pasteBtn" class="secondary" type="button">Paste</button>
+      </div>
+      <button id="analyseBtn" class="primary" type="button"><span>⌕</span> Analyse link</button>
+      <p id="statusText" class="hint" aria-live="polite">Waiting for a link.</p>
+    </section>
+
+    <section id="resultPanel" class="panel result-panel hidden" aria-live="polite">
+      <div class="result-head">
+        <div><div class="eyebrow">LINK ANALYSIS</div><h2 id="resultTitle">Media detected</h2></div>
+        <span id="sourceTag" class="tag">DIRECT MEDIA</span>
+      </div>
+      <p id="resultDescription" class="result-description"></p>
+      <div id="options" class="options"></div>
+      <p id="permissionNote" class="permission-note"></p>
+    </section>
+
+    <section class="how">
+      <div class="section-title">HOW IT WORKS</div>
+      <div class="steps">
+        <article><span>01</span><b>Paste or share</b><p>Send a link from another app, or paste it here.</p></article>
+        <article><span>02</span><b>Check availability</b><p>Ayo identifies the source and checks which formats are actually available.</p></article>
+        <article><span>03</span><b>Choose & save</b><p>Select an available format and quality, then save where permitted.</p></article>
+      </div>
+    </section>
+
+    <footer>
+      <span>AYODOWNLOADER V3</span>
+      <span>Only download content you own or are authorised to save.</span>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
