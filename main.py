@@ -5,7 +5,7 @@ import ipaddress
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 BASE_DIR = Path(__file__).resolve().parent
 PLATFORMS = {
@@ -17,69 +17,74 @@ PLATFORMS = {
 VIDEO_EXTENSIONS = {".mp4", ".webm", ".mov", ".m4v"}
 AUDIO_EXTENSIONS = {".mp3", ".m4a", ".aac", ".wav", ".ogg", ".flac"}
 
-app = FastAPI(title="AyoDownloader API", version="4.0.0")
+app = FastAPI(title="AyoDownloader API", version="5.0.0")
 
 
 class AnalyzeRequest(BaseModel):
     url: str = Field(min_length=8, max_length=2048)
 
+    @field_validator("url")
+    @classmethod
+    def trim_url(cls, value: str) -> str:
+        return value.strip()
+
 
 def classify_url(raw: str) -> dict:
+    parsed = urlsplit(raw)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise HTTPException(status_code=400, detail="Enter a valid public HTTP or HTTPS link.")
+    if parsed.username or parsed.password:
+        raise HTTPException(status_code=400, detail="Links containing embedded login details are not accepted.")
+
+    host = parsed.hostname.lower().rstrip(".")
+    if host == "localhost" or host.endswith((".localhost", ".local")):
+        raise HTTPException(status_code=400, detail="Local network addresses are not accepted.")
     try:
-        parsed = urlsplit(raw.strip())
-        if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-            raise ValueError("Enter a public HTTP or HTTPS link.")
-        if parsed.username or parsed.password:
-            raise ValueError("Links containing embedded login details are not accepted.")
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        address = None
+    if address is not None and not address.is_global:
+        raise HTTPException(status_code=400, detail="Private or reserved network addresses are not accepted.")
 
-        host = parsed.hostname.lower().rstrip(".")
-        if host == "localhost" or host.endswith((".localhost", ".local")):
-            raise ValueError("Local network addresses are not accepted.")
-        try:
-            address = ipaddress.ip_address(host)
-        except ValueError:
-            address = None
-        if address is not None and not address.is_global:
-            raise ValueError("Private or reserved network addresses are not accepted.")
+    suffix = Path(parsed.path.lower()).suffix
+    platform = next(
+        (name for domain, name in PLATFORMS.items()
+         if host == domain or host.endswith("." + domain)),
+        None,
+    )
+    safe_url = parsed.geturl()
 
-        suffix = Path(parsed.path.lower()).suffix
-        platform = next(
-            (name for domain, name in PLATFORMS.items()
-             if host == domain or host.endswith("." + domain)),
-            None,
-        )
-        safe_url = parsed.geturl()
-
-        if platform:
-            return {
-                "kind": "platform", "name": platform, "url": safe_url,
-                "formats": [],
-                "message": (
-                    "Platform recognised. Media formats are available only "
-                    "when a permitted source integration provides them."
-                ),
-            }
-        if suffix in VIDEO_EXTENSIONS:
-            return {
-                "kind": "video", "name": "Direct video", "url": safe_url,
-                "formats": [{"type": "video", "quality": "Original file",
-                             "extension": suffix}],
-                "message": "Direct video file recognised. Only the original source file is available.",
-            }
-        if suffix in AUDIO_EXTENSIONS:
-            return {
-                "kind": "audio", "name": "Direct audio", "url": safe_url,
-                "formats": [{"type": "audio", "quality": "Original file",
-                             "extension": suffix}],
-                "message": "Direct audio file recognised. Only the original source file is available.",
-            }
+    if platform:
         return {
-            "kind": "unknown", "name": "Unknown source", "url": safe_url,
-            "formats": [],
-            "message": "No supported direct media-file extension was detected.",
+            "status": "recognised", "kind": "platform", "source": platform,
+            "url": safe_url, "formats": [],
+            "can_download": False,
+            "message": (
+                f"{platform} link recognised. This deployment has no authorised "
+                "media-format integration connected for this source."
+            ),
         }
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if suffix in VIDEO_EXTENSIONS:
+        return {
+            "status": "recognised", "kind": "video", "source": "Direct video file",
+            "url": safe_url, "can_download": True,
+            "formats": [{"id": "original", "type": "video", "container": suffix[1:].upper(),
+                         "quality": "Original source quality", "label": f"Video · {suffix[1:].upper()} · Original"}],
+            "message": "Direct video file recognised. The original source file is the only format advertised.",
+        }
+    if suffix in AUDIO_EXTENSIONS:
+        return {
+            "status": "recognised", "kind": "audio", "source": "Direct audio file",
+            "url": safe_url, "can_download": True,
+            "formats": [{"id": "original", "type": "audio", "container": suffix[1:].upper(),
+                         "quality": "Original source quality", "label": f"Audio · {suffix[1:].upper()} · Original"}],
+            "message": "Direct audio file recognised. The original source file is the only format advertised.",
+        }
+    return {
+        "status": "unavailable", "kind": "unknown", "source": "Unknown source",
+        "url": safe_url, "can_download": False, "formats": [],
+        "message": "No supported direct media-file extension or connected source integration was detected.",
+    }
 
 
 @app.get("/api/health")

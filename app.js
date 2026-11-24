@@ -1,126 +1,81 @@
-const $ = (id) => document.getElementById(id);
+const $ = id => document.getElementById(id);
 const input = $("urlInput");
-const statusText = $("statusText");
 const resultPanel = $("resultPanel");
 
-function validHttpUrl(raw) {
+function getHttpUrl(raw) {
   try {
-    const u = new URL(raw.trim());
-    return ["http:", "https:"].includes(u.protocol) && !u.username && !u.password ? u : null;
+    const url = new URL(raw.trim());
+    return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password ? url : null;
   } catch { return null; }
 }
-
-function option(title, detail, href, label) {
-  const card = document.createElement("div");
-  card.className = "option";
-  const strong = document.createElement("strong");
-  strong.textContent = title;
-  const small = document.createElement("small");
-  small.textContent = detail;
-  const action = document.createElement("a");
-  action.href = href;
-  action.target = "_blank";
-  action.rel = "noopener noreferrer";
-  action.textContent = label;
-  card.append(strong, small, action);
+function makeFormatCard(format, url) {
+  const card = document.createElement("article");
+  card.className = "format-card";
+  const heading = document.createElement("strong");
+  heading.textContent = format.label || `${format.type} · ${format.container}`;
+  const detail = document.createElement("small");
+  detail.textContent = format.quality || "Original source format";
+  const link = document.createElement("a");
+  link.href = url; link.target = "_blank"; link.rel = "noopener noreferrer";
+  link.textContent = "Open original file";
+  card.append(heading, detail, link);
   return card;
 }
-
-function showResult(info, url) {
-  const options = $("options");
-  const preview = $("preview");
-  options.replaceChildren();
-  preview.replaceChildren();
-  preview.classList.add("hidden");
+function renderResult(data, url) {
   $("resultDescription").textContent = url;
+  $("sourceTag").textContent = data.source.toUpperCase();
+  $("formatList").replaceChildren();
+  $("preview").replaceChildren();
+  $("preview").classList.add("hidden");
 
-  if (info.kind === "video" || info.kind === "audio") {
-    const isVideo = info.kind === "video";
-    const ext = info.formats?.[0]?.extension || "";
-    $("resultTitle").textContent = isVideo ? "Direct video detected" : "Direct audio detected";
-    $("sourceTag").textContent = isVideo ? "DIRECT VIDEO" : "DIRECT AUDIO";
-
-    const player = document.createElement(isVideo ? "video" : "audio");
-    player.controls = true;
-    player.preload = "metadata";
-    player.src = url;
-    player.addEventListener("error", () => {
-      statusText.textContent = "The link was recognised, but the source did not allow an in-page preview.";
-    }, { once: true });
-    preview.append(player);
-    preview.classList.remove("hidden");
-
-    options.append(option(
-      isVideo ? "Video · Original file" : "Audio · Original file",
-      `Original source format${ext ? " (" + ext.toUpperCase() + ")" : ""}. No conversion or quality variants are offered.`,
-      url,
-      "Open original file"
-    ));
-    $("permissionNote").textContent =
-      "AyoDownloader does not copy or proxy the remote file. Use the media player's controls or the source website's save option where permitted. The source host and browser decide whether saving is available.";
-    statusText.textContent = "Online analysis complete — direct " + info.kind + " recognised.";
-  } else if (info.kind === "platform") {
-    $("resultTitle").textContent = info.name + " link recognised";
-    $("sourceTag").textContent = info.name.toUpperCase();
-    options.append(option("Open source page", "Continue to the original platform.", url, "Open source"));
-    $("permissionNote").textContent =
-      "This version identifies platform links but does not extract media or list quality options. Those features require a permitted integration from the platform or content owner. It will not bypass DRM, private content, login controls or download restrictions.";
-    statusText.textContent = info.name + " recognised. No permitted media-format integration is connected.";
+  if (data.kind === "video" || data.kind === "audio") {
+    $("resultTitle").textContent = "Original media format found";
+    data.formats.forEach(f => $("formatList").append(makeFormatCard(f, url)));
+    const player = document.createElement(data.kind === "video" ? "video" : "audio");
+    player.controls = true; player.preload = "metadata"; player.src = url;
+    $("preview").append(player); $("preview").classList.remove("hidden");
+    $("permissionNote").textContent = "Only the original source format is listed. AyoDownloader does not convert, proxy or re-host the remote file. Use the source/player's save controls where available and permitted; browser and host behaviour may vary.";
+    $("statusText").textContent = `Direct ${data.kind} recognised.`;
+  } else if (data.kind === "platform") {
+    $("resultTitle").textContent = `${data.source} link recognised`;
+    const card = document.createElement("article"); card.className = "format-card";
+    const strong = document.createElement("strong"); strong.textContent = "No formats available yet";
+    const small = document.createElement("small"); small.textContent = "A permitted integration for this source is not connected.";
+    const link = document.createElement("a"); link.href = url; link.target = "_blank"; link.rel = "noopener noreferrer"; link.textContent = "Open source website";
+    card.append(strong, small, link); $("formatList").append(card);
+    $("permissionNote").textContent = "Recognising a platform URL does not provide its media streams. Format and quality options can be shown only when the platform or content owner provides an authorised integration. AyoDownloader will not bypass DRM, login restrictions, private content or download protections.";
+    $("statusText").textContent = `${data.source} recognised; no authorised format integration is connected.`;
   } else {
-    $("resultTitle").textContent = "Link received";
-    $("sourceTag").textContent = "UNKNOWN SOURCE";
-    options.append(option("No direct media format found", "Try a public direct MP4, WebM, MP3 or other supported media-file link.", url, "Open source page"));
-    $("permissionNote").textContent = "Some websites do not expose direct media-file URLs. AyoDownloader does not attempt to bypass their access controls.";
-    statusText.textContent = "The link is valid, but no supported direct media-file extension was detected.";
+    $("resultTitle").textContent = "No supported format found";
+    const card = document.createElement("article"); card.className = "format-card";
+    const strong = document.createElement("strong"); strong.textContent = "Try a direct media-file URL";
+    const small = document.createElement("small"); small.textContent = "Supported direct extensions include MP4, WebM, MOV, MP3, M4A and WAV.";
+    card.append(strong, small); $("formatList").append(card);
+    $("permissionNote").textContent = "Some websites do not expose direct media files. This version does not attempt to bypass website access controls.";
+    $("statusText").textContent = "The URL is valid, but no supported media format was found.";
   }
   resultPanel.classList.remove("hidden");
 }
-
-async function analyse(raw = input.value.trim()) {
-  const url = validHttpUrl(raw);
-  if (!url) {
-    statusText.textContent = "Please enter a valid public HTTP or HTTPS link.";
-    resultPanel.classList.add("hidden");
-    return;
-  }
+async function analyse(raw = input.value) {
+  const url = getHttpUrl(raw);
+  if (!url) { $("statusText").textContent = "Enter a valid public HTTP or HTTPS URL."; resultPanel.classList.add("hidden"); return; }
   input.value = url.href;
-  statusText.textContent = "Checking with AyoDownloader online…";
-  $("analyseBtn").disabled = true;
+  $("analyseBtn").disabled = true; $("statusText").textContent = "Analysing link…";
   try {
-    const response = await fetch("/api/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: url.href })
-    });
+    const response = await fetch("/api/analyze", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:url.href})});
     const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || "The service could not analyse this link.");
-    showResult(data, url.href);
-  } catch (error) {
-    statusText.textContent = error.message || "Could not reach the online service. Please try again.";
-    resultPanel.classList.add("hidden");
-  } finally {
-    $("analyseBtn").disabled = false;
-  }
+    if (!response.ok) throw new Error(data.detail || "Analysis failed.");
+    renderResult(data, url.href);
+  } catch (err) { $("statusText").textContent = err.message || "Could not reach AyoDownloader. Try again."; resultPanel.classList.add("hidden"); }
+  finally { $("analyseBtn").disabled = false; }
 }
-
 $("analyseBtn").addEventListener("click", () => analyse());
 input.addEventListener("keydown", e => { if (e.key === "Enter") analyse(); });
 $("pasteBtn").addEventListener("click", async () => {
-  try {
-    input.value = await navigator.clipboard.readText();
-    statusText.textContent = "Link pasted. Tap Analyse link.";
-  } catch {
-    statusText.textContent = "Clipboard access unavailable. Long-press the box and choose Paste.";
-  }
+  try { input.value = await navigator.clipboard.readText(); $("statusText").textContent = "Link pasted. Select Analyse link."; }
+  catch { $("statusText").textContent = "Clipboard permission unavailable. Paste into the box manually."; }
 });
-
 const params = new URLSearchParams(location.search);
 const shared = params.get("url") || params.get("text") || "";
-if (shared) {
-  const match = shared.match(/https?:\/\/[^\s]+/i);
-  input.value = match ? match[0].replace(/[),.]+$/, "") : shared;
-  analyse(input.value);
-}
-if ("serviceWorker" in navigator && location.protocol !== "file:") {
-  navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-}
+if (shared) { const match = shared.match(/https?:\/\/[^\s]+/i); input.value = match ? match[0].replace(/[),.]+$/, "") : shared; analyse(input.value); }
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/service-worker.js").catch(() => {});

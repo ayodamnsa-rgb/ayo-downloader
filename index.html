@@ -1,65 +1,44 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#07111f">
-  <meta name="description" content="AyoDownloader — recognise direct media links and open original files.">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <title>AyoDownloader V4</title>
+  <meta name="description" content="AyoDownloader — analyse public media links and open original files.">
+  <link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css"><title>AyoDownloader V5</title>
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <a class="brand" href="./" aria-label="AyoDownloader home">
-        <span class="brand-mark">A</span><span>Ayo<span class="green">Downloader</span><small>V4 · ONLINE MEDIA LINK TOOL</small></span>
-      </a>
-      <span class="status"><i></i> ONLINE</span>
-    </header>
-
-    <section class="hero">
-      <div class="eyebrow">YOUR MEDIA. YOUR CHOICE.</div>
-      <h1>Media made <span class="green">simple.</span></h1>
-      <p>Paste a public media link, or share a link to AyoDownloader from another app.</p>
-    </section>
-
-    <section class="panel input-panel">
-      <label for="urlInput">VIDEO OR AUDIO LINK</label>
-      <div class="url-row">
-        <input id="urlInput" type="url" placeholder="Paste a public link here…" autocomplete="url" inputmode="url">
-        <button id="pasteBtn" class="secondary" type="button">Paste</button>
-      </div>
-      <button id="analyseBtn" class="primary" type="button">⌕ &nbsp; Analyse link</button>
-      <p id="statusText" class="hint" aria-live="polite">Ready. Enter a link to begin.</p>
-    </section>
-
-    <section id="resultPanel" class="panel result-panel hidden" aria-live="polite">
-      <div class="result-head">
-        <div><div class="eyebrow">LINK ANALYSIS</div><h2 id="resultTitle">Media detected</h2></div>
-        <span id="sourceTag" class="tag">DIRECT MEDIA</span>
-      </div>
-      <p id="resultDescription" class="result-description"></p>
-      <div id="preview" class="preview hidden"></div>
-      <div id="options" class="options"></div>
-      <p id="permissionNote" class="permission-note"></p>
-    </section>
-
-    <section class="how">
-      <div class="section-title">HOW IT WORKS</div>
-      <div class="steps">
-        <article><span>01</span><b>Paste or share</b><p>Send a public link from another app, or paste it here.</p></article>
-        <article><span>02</span><b>Identify the source</b><p>Ayo checks the link type and identifies supported direct media files.</p></article>
-        <article><span>03</span><b>Open the original</b><p>Preview or open the original file. The source host controls saving.</p></article>
-      </div>
-    </section>
-
-    <footer>
-      <span>AYODOWNLOADER V4</span>
-      <span>Only save content you own or are authorised to download.</span>
-    </footer>
-  </main>
-  <script src="app.js"></script>
-</body>
-</html>
+<main class="shell">
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">A</span><span>Ayo<span class="green">Downloader</span><small>V5 · MEDIA LINK ANALYSER</small></span></a>
+    <span class="status"><i></i> ONLINE</span>
+  </header>
+  <section class="hero">
+    <div class="eyebrow">YOUR MEDIA. YOUR CHOICE.</div>
+    <h1>Paste. Analyse. <span class="green">Choose.</span></h1>
+    <p>Find the formats a supported source makes available. Start with a public media link.</p>
+  </section>
+  <section class="panel input-panel">
+    <label for="urlInput">VIDEO OR AUDIO URL</label>
+    <div class="url-row"><input id="urlInput" type="url" placeholder="Paste a video or audio link…" autocomplete="url" inputmode="url"><button id="pasteBtn" class="secondary" type="button">Paste</button></div>
+    <button id="analyseBtn" class="primary" type="button"><span>⌕</span> Analyse link</button>
+    <p id="statusText" class="hint" aria-live="polite">Ready when you are. Paste a public link above.</p>
+  </section>
+  <section id="resultPanel" class="panel result-panel hidden" aria-live="polite">
+    <div class="result-head"><div><div class="eyebrow">ANALYSIS RESULTS</div><h2 id="resultTitle">Available formats</h2></div><span id="sourceTag" class="tag">SOURCE</span></div>
+    <p id="resultDescription" class="result-description"></p>
+    <div id="formatList" class="format-list"></div>
+    <div id="preview" class="preview hidden"></div>
+    <p id="permissionNote" class="permission-note"></p>
+  </section>
+  <section class="how"><div class="section-title">BUILT FOR A SIMPLE WORKFLOW</div>
+    <div class="steps">
+      <article><span>01</span><b>Paste or share</b><p>Send a public URL from your browser or another app.</p></article>
+      <article><span>02</span><b>Analyse availability</b><p>Ayo identifies the source and lists formats only when a supported integration supplies them.</p></article>
+      <article><span>03</span><b>Choose your format</b><p>Open the original direct media file or continue to the source website.</p></article>
+    </div>
+  </section>
+  <footer><span>AYODOWNLOADER V5</span><span>Only save content you own or are authorised to download.</span></footer>
+</main>
+<script src="/app.js"></script>
+</body></html>
