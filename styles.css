@@ -13,3 +13,7 @@
 .download-link{background:linear-gradient(90deg,#31d69b,#16a879);color:#042117}
 .open-link{background:#173b35;color:#9af0ce}
 @media(max-width:420px){.format-actions{grid-template-columns:1fr}}
+
+.format-actions button{width:100%;display:block;text-align:center;border:0;border-radius:8px;padding:10px 8px;font-weight:850;font-size:12px;cursor:pointer}
+.download-link{background:linear-gradient(90deg,#31d69b,#16a879);color:#042117}
+.download-link:disabled{opacity:.65;cursor:wait}

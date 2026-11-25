@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#07111f">
-  <meta name="description" content="AyoDownloader — analyse public media links and open original files.">
+  <meta name="description" content="AyoDownloader — analyse direct media links, download original files and receive shared links on Android.">
   <link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css"><title>AyoDownloader V6</title>
+  <link rel="stylesheet" href="/styles.css"><title>AyoDownloader V7</title>
 </head>
 <body>
 <main class="shell">
   <header class="topbar">
-    <a class="brand" href="/"><span class="brand-mark">A</span><span>Ayo<span class="green">Downloader</span><small>V6 · MEDIA LINK ANALYSER</small></span></a>
+    <a class="brand" href="/"><span class="brand-mark">A</span><span>Ayo<span class="green">Downloader</span><small>V7 · MEDIA LINK DOWNLOADER</small></span></a>
     <span class="status"><i></i> ONLINE</span>
   </header>
   <section class="hero">
@@ -20,9 +20,9 @@
   </section>
   <section class="panel input-panel">
     <label for="urlInput">VIDEO OR AUDIO URL</label>
-    <div class="url-row"><input id="urlInput" type="url" placeholder="Paste a video or audio link…" autocomplete="url" inputmode="url"><button id="pasteBtn" class="secondary" type="button">Paste</button></div>
+    <div class="url-row"><input id="urlInput" type="url" placeholder="Paste or share a video or audio link…" autocomplete="url" inputmode="url"><button id="pasteBtn" class="secondary" type="button">Paste</button></div>
     <button id="analyseBtn" class="primary" type="button"><span>⌕</span> Analyse link</button>
-    <p id="statusText" class="hint" aria-live="polite">Ready when you are. Paste a public link above.</p>
+    <p id="statusText" class="hint" aria-live="polite">Ready when you are. Paste a public link or share one from another app.</p>
   </section>
   <section id="resultPanel" class="panel result-panel hidden" aria-live="polite">
     <div class="result-head"><div><div class="eyebrow">ANALYSIS RESULTS</div><h2 id="resultTitle">Available formats</h2></div><span id="sourceTag" class="tag">SOURCE</span></div>
@@ -33,12 +33,12 @@
   </section>
   <section class="how"><div class="section-title">BUILT FOR A SIMPLE WORKFLOW</div>
     <div class="steps">
-      <article><span>01</span><b>Paste or share</b><p>Send a public URL from your browser or another app.</p></article>
+      <article><span>01</span><b>Paste or share</b><p>Install AyoDownloader from your Android browser, then use Share in another app and choose AyoDownloader.</p></article>
       <article><span>02</span><b>Analyse availability</b><p>Ayo identifies the source and lists formats only when a supported integration supplies them.</p></article>
-      <article><span>03</span><b>Choose your format</b><p>Download the original direct media file where the source host and browser allow it.</p></article>
+      <article><span>03</span><b>Download original</b><p>Save supported direct media files, with download progress and clear errors.</p></article>
     </div>
   </section>
-  <footer><span>AYODOWNLOADER V5</span><span>Only save content you own or are authorised to download.</span></footer>
+  <footer><span>AYODOWNLOADER V7</span><span>Only save content you own or are authorised to download.</span></footer>
 </main>
 <script src="/app.js"></script>
 </body></html>

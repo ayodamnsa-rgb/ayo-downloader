@@ -1,55 +1,39 @@
-AYODOWNLOADER V6 — DEPLOYMENT PACKAGE
-=====================================
+AYODOWNLOADER V7
+================
 
-WHAT CHANGED FROM V5
-- Adds a visible "Download original" action for direct video/audio file URLs.
-- Keeps a separate "Open source file" action.
-- Adds clearer information when the browser or remote host does not honour a download request.
-- Updates API version and PWA cache name to 6.0.0.
+V7 adds a same-origin download endpoint for direct public media files and keeps Android PWA Share Target support.
 
-WHAT THIS VERSION SUPPORTS
-- FastAPI web interface and API on one Render service.
-- Recognition of YouTube, TikTok, Instagram, Facebook, X and Vimeo URLs.
-- Direct video extensions: MP4, WebM, MOV, M4V.
-- Direct audio extensions: MP3, M4A, AAC, WAV, OGG, FLAC.
-- Browser preview and a download-request link for direct media files.
-- PWA manifest and Android browser Share Target on compatible browsers.
+FEATURES
+- FastAPI backend and responsive web interface.
+- Recognises direct MP4, WebM, MOV, M4V, MP3, M4A, AAC, WAV, OGG and FLAC URLs.
+- Downloads supported direct media through /api/download and returns Content-Disposition: attachment.
+- Shows transfer progress in the browser.
+- Android share target receives shared URL/text parameters and automatically analyses the first URL.
+- PWA install support over HTTPS.
+- Platform links (YouTube, TikTok, Instagram, Facebook, X, Vimeo) are recognised, but no platform extraction is provided.
 
-IMPORTANT LIMITATIONS
-The download action asks the browser to download the original remote file. Browsers
-may ignore the download attribute for cross-origin URLs, and the remote host may
-open a player or apply its own behaviour. AyoDownloader does not proxy, convert or
-re-host the remote file.
+DOWNLOAD LIMITS AND SAFETY
+- Direct media files only; maximum 150 MB per download.
+- Only HTTP/HTTPS, standard ports 80/443, public DNS/IP addresses, and known media extensions are accepted.
+- Redirects are revalidated; non-public network addresses are blocked by the DNS resolver.
+- This is not an open proxy and does not bypass DRM, login restrictions, private content, or platform download controls.
+- Only download content you own or are authorised to save.
+- The free Render plan may have memory, bandwidth, and request-duration limits. Browser download buffering uses memory.
 
-Platform URLs are recognised but do not yet have authorised format integrations.
-Therefore YouTube/TikTok/Instagram/etc. will not show invented quality choices.
-A genuine platform integration must be permitted by that platform or the content
-owner. This app will not bypass DRM, private/login-only content, access controls,
-or platform download restrictions. Only save content you own or are authorised
-to download.
+ANDROID SHARING
+1. Open https://ayodownloader.onrender.com in a compatible Android browser (Chrome recommended).
+2. Install AyoDownloader using the browser's Install app / Add to Home Screen option.
+3. Open another app, tap Share, and choose AyoDownloader.
+4. The shared URL should populate and analyse automatically.
+5. If AyoDownloader does not appear in the Android share sheet, confirm the PWA is installed and the browser supports Web Share Target.
 
-DEPLOY
-1. Extract this ZIP.
-2. Open GitHub repository: ayodownloader.
-3. Add file > Upload files.
-4. Open the extracted AyoDownloader_V6 folder and select ALL contents inside.
-5. Upload to the repository root, replacing old files.
-6. Commit changes to the main branch.
-7. Wait for Render deployment to finish.
-8. Open /api/health. Expected version: 6.0.0.
+This is PWA sharing, not a native APK. A future native Android wrapper would need its own Android intent filter.
 
-RENDER
-Build: pip install -r requirements.txt
-Start: uvicorn main:app --host 0.0.0.0 --port $PORT
-Health check: /api/health
+DEPLOYMENT
+- Runtime: Python
+- Build: pip install -r requirements.txt
+- Start: uvicorn main:app --host 0.0.0.0 --port $PORT
+- Health: /api/health
+- Render health check path: /api/health
 
-TEST
-Use this public sample direct MP4:
-https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4
-
-LOCAL DEVELOPMENT (optional)
-Python 3.10+:
-  python -m venv .venv
-  .venv\\Scripts\\activate
-  pip install -r requirements.txt
-  uvicorn main:app --reload
+After deployment, /api/health should report version 7.0.0.
