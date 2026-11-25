@@ -1,52 +1,55 @@
-AYODOWNLOADER V5 — DEPLOYMENT PACKAGE
+AYODOWNLOADER V6 — DEPLOYMENT PACKAGE
 =====================================
 
-WHAT THIS VERSION DOES
-- Hosts the V5 web interface and FastAPI backend on one Render service.
-- Validates public HTTP/HTTPS URLs and recognises supported platform domains.
-- Detects direct video extensions (MP4, WebM, MOV, M4V).
-- Detects direct audio extensions (MP3, M4A, AAC, WAV, OGG, FLAC).
-- Shows a preview for direct media URLs when the source permits playback.
-- Lists the original source file as the available format for direct media links.
-- Supports PWA manifest and Android browser Share Target on compatible browsers.
-- Health endpoint: /api/health (expected API version 5.0.0).
+WHAT CHANGED FROM V5
+- Adds a visible "Download original" action for direct video/audio file URLs.
+- Keeps a separate "Open source file" action.
+- Adds clearer information when the browser or remote host does not honour a download request.
+- Updates API version and PWA cache name to 6.0.0.
 
-IMPORTANT
-This is a functioning direct-media link analyser and preview/open tool. It is
-NOT yet a universal social-platform downloader. Platform links are recognised,
-but the API intentionally returns no download formats for them until an
-authorised provider integration is connected. No DRM, private/login-only
-content, access controls or platform download restrictions are bypassed.
+WHAT THIS VERSION SUPPORTS
+- FastAPI web interface and API on one Render service.
+- Recognition of YouTube, TikTok, Instagram, Facebook, X and Vimeo URLs.
+- Direct video extensions: MP4, WebM, MOV, M4V.
+- Direct audio extensions: MP3, M4A, AAC, WAV, OGG, FLAC.
+- Browser preview and a download-request link for direct media files.
+- PWA manifest and Android browser Share Target on compatible browsers.
 
-The app does not fetch or proxy user-submitted URLs. This avoids turning the
-service into an arbitrary remote-fetch proxy. For direct media links, the
-browser opens the original source URL; saving availability depends on the
-source host and browser. Only download content you own or are authorised to save.
+IMPORTANT LIMITATIONS
+The download action asks the browser to download the original remote file. Browsers
+may ignore the download attribute for cross-origin URLs, and the remote host may
+open a player or apply its own behaviour. AyoDownloader does not proxy, convert or
+re-host the remote file.
 
-REPLACE THE CURRENT GITHUB PROJECT
+Platform URLs are recognised but do not yet have authorised format integrations.
+Therefore YouTube/TikTok/Instagram/etc. will not show invented quality choices.
+A genuine platform integration must be permitted by that platform or the content
+owner. This app will not bypass DRM, private/login-only content, access controls,
+or platform download restrictions. Only save content you own or are authorised
+to download.
+
+DEPLOY
 1. Extract this ZIP.
-2. Open your existing GitHub repository: ayodownloader.
-3. Click Add file > Upload files.
-4. Open the extracted AyoDownloader_V5 folder and select ALL contents inside.
-5. Upload to the repository root, replacing the old files.
+2. Open GitHub repository: ayodownloader.
+3. Add file > Upload files.
+4. Open the extracted AyoDownloader_V6 folder and select ALL contents inside.
+5. Upload to the repository root, replacing old files.
 6. Commit changes to the main branch.
-7. Render should deploy the new commit automatically.
-8. Wait for Live, then open /api/health. It should show version 5.0.0.
+7. Wait for Render deployment to finish.
+8. Open /api/health. Expected version: 6.0.0.
 
-RENDER CONFIGURATION
-render.yaml sets:
-  buildCommand: pip install -r requirements.txt
-  startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-  healthCheckPath: /api/health
+RENDER
+Build: pip install -r requirements.txt
+Start: uvicorn main:app --host 0.0.0.0 --port $PORT
+Health check: /api/health
 
-ANDROID SHARE
-Deploy over HTTPS, open the site in Chrome on Android, then install/add to
-home screen. Share-target availability depends on browser/device support.
-A native APK would require a separate Android wrapper with share intents.
+TEST
+Use this public sample direct MP4:
+https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4
 
 LOCAL DEVELOPMENT (optional)
 Python 3.10+:
   python -m venv .venv
-  .venv\Scripts\activate
+  .venv\\Scripts\\activate
   pip install -r requirements.txt
   uvicorn main:app --reload

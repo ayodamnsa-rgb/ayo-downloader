@@ -17,7 +17,7 @@ PLATFORMS = {
 VIDEO_EXTENSIONS = {".mp4", ".webm", ".mov", ".m4v"}
 AUDIO_EXTENSIONS = {".mp3", ".m4a", ".aac", ".wav", ".ogg", ".flac"}
 
-app = FastAPI(title="AyoDownloader API", version="5.0.0")
+app = FastAPI(title="AyoDownloader API", version="6.0.0")
 
 
 class AnalyzeRequest(BaseModel):

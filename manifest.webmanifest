@@ -2,7 +2,7 @@
   "id": "/",
   "name": "AyoDownloader",
   "short_name": "AyoDownloader",
-  "description": "Analyse public media links and open original files.",
+  "description": "Analyse public media links and download original direct media files where supported.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
